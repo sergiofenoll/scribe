@@ -20,6 +20,7 @@ class DBConnection:
                             CONTENT TEXT,
                             AUTHOR TEXT,
                             CHANNEL TEXT,
+                            SERVER TEXT,
                             ATTACHMENTS TEXT[],
                             DELETED BOOL
                             );""")

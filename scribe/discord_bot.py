@@ -12,12 +12,13 @@ async def on_message(message):
                 curs.execute(
                         """INSERT INTO MESSAGES VALUES(
                         %(m_id)s, %(sent_time)s, %(content)s,
-                        %(author)s, %(channel)s, %(attachments)s, NULL
+                        %(author)s, %(channel)s, %(server)s,
+                        %(attachments)s, NULL
                         );""",
                         {
                             'm_id': message.id, 'sent_time': message.created_at,
                             'content': message.clean_content, 'author': message.author.name,
-                            'channel': message.channel.name,
+                            'channel': message.channel.name, 'server': str(message.guild),
                             'attachments': list([atch.url for atch in message.attachments]),
                         })
     except Exception as e:
