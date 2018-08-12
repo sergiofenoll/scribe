@@ -1,5 +1,7 @@
+import asyncio
 from datetime import datetime
 from discord.ext import commands
+from plugins.db import db
 
 class Setup():
     def __init__(self, bot):
@@ -7,7 +9,7 @@ class Setup():
 
     @commands.command()
     async def setup_db(self, ctx):
-        pass
+        db.create_db()
 
     @commands.command()
     async def populate_db(self, ctx, *args):
