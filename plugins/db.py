@@ -1,39 +1,184 @@
 import sqlite3
 
-class DB():
+
+class DB:
     def __init__(self):
         self.conn = sqlite3.connect("messages.db")
 
     def create_db(self):
         curs = self.cursor()
-        curs.execute("create table if not exists messages(m_id bigint primary key, sent_time timestamp, content text, author text, channel text, guild text, edited bool, deleted bool)")
-        curs.execute("create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, reaction_name text, reaction_count integer)")
+        curs.execute(
+            "create table if not exists users(u_id bigint, g_id bigint references guilds(g_id), username text, discriminator text, nick text, left bool, start_time timestamp, end_time timestamp, primary key(u_id, g_id))"
+        )
+        curs.execute(
+            "create table if not exists messages(m_id bigint primary key, sent_time timestamp, content text, u_id bigint references users(u_id), c_id bigint references channels(c_id), g_id bigint references guilds(g_id) on delete cascade, edited bool, edited_count int, edited_time timestamp, deleted bool, deleted_time timestamp)"
+        )
+        curs.execute(
+            "create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, reaction_name text, reaction_count integer, primary key(m_id, reaction_name))"
+        )
+        curs.execute(
+            "create table if not exists guilds(g_id bigint, name text, start_time timestamp, end_time timestamp, primary key(g_id, start_time))"
+        )
+        curs.execute(
+            "create table if not exists channels(c_id bigint, g_id bigint references guilds(g_id) on delete cascade, name text, topic text, start_time timestamp, end_time timestamp, primary key(c_id, start_time))"
+        )
         self.conn.commit()
 
-    def get_messages(self):
+    def user_exists(self, filters):
         curs = self.cursor()
-        curs.execute("select * from messages where m_id = ?", message_id)
+        statement = "select * from users where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        result = curs.execute(statement, list(filters.values())).fetchone()
+        self.conn.commit()
+        return result is not None
+
+    def add_user(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into users values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
+
+    def delete_user(self, filters, data):
+        curs = self.cursor()
+        statement = "update users set left = ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["left"]] + list(filters.keys()))
+        self.conn.commit()
+
+    def edit_user(self, filters, data):
+        curs = self.cursor()
+        statement = "update users set end_time = ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["start_time"]] + list(filters.values()))
+        self.conn.commit()
+        self.add_user(data)
+
+    def guild_exists(self, filters):
+        curs = self.cursor()
+        statement = "select * from guilds where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        result = curs.execute(statement, list(filters.values())).fetchone()
+        self.conn.commit()
+        return result is not None
+
+    def add_guild(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into guilds values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
+
+    def delete_guild(self, filters, data):
+        curs = self.cursor()
+        statement = "update guilds set end_time = ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["end_time"]] + list(filters.keys()))
+        self.conn.commit()
+
+    def edit_guild(self, filters, data):
+        curs = self.cursor()
+        statement = "update guilds set end_time ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["start_time"]] + list(filters.values()))
+        self.conn.commit()
+        self.add_guild(data)
+
+    def channel_exists(self, filters):
+        curs = self.cursor()
+        statement = "select * from channels where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        result = curs.execute(statement, list(filters.values())).fetchone()
+        self.conn.commit()
+        return result is not None
+
+    def add_channel(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into channels values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
+
+    def delete_channel(self, filters, data):
+        curs = self.cursor()
+        statement = "update channels set end_time = ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["end_time"]] + list(filters.values()))
+        self.conn.commit()
+
+    def edit_channel(self, filters, data):
+        curs = self.cursor()
+        statement = "update channels set end_time = ? where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        curs.execute(statement, [data["start_time"]] + list(filters.values()))
+        self.conn.commit()
+        self.add_channel(data)
+
+    def get_messages(self, filters):
+        curs = self.cursor()
+        curs.execute("select * from messages where m_id = ?", filters["message_id"])
         return curs.fetchall()
 
-    def add_message(self, content):
+    def add_message(self, data):
         curs = self.cursor()
-        statement = "insert into messages values(" + ("?," * len(content.values()))[:-1] + ")"
-        curs.execute(statement, content.values())
+        statement = (
+            "insert or replace into messages values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
         self.conn.commit()
 
-    def edit_message(self):
-        pass
+    def edit_message(self, filters, data):
+        curs = self.cursor()
+        statement = (
+            "update messages set content = ?, edited_time = ?, edited = true, edited_count = edited_count + 1, where "
+            + (" and ".join(key + " = ?" for key in filters.keys()))
+        )
+        curs.execute(
+            statement, [data["content"], data["edited_time"]] + list(filters.keys())
+        )
+        self.conn.commit()
 
-    def delete_message(self):
-        pass
+    def delete_message(self, filters, data):
+        curs = self.cursor()
+        statement = (
+            "update messages set content = NULL, deleted_time = ?, deleted = true where "
+            + (" and ".join(key + " = ?" for key in filters.keys()))
+        )
+        curs.execute(statement, [data["deleted_time"]] + list(filters.keys()))
+        self.conn.commit()
 
-    def add_reaction(self):
-        pass
-
-    def remove_reaction(self):
-        pass
+    def update_reaction(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into reactions values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
 
     def cursor(self):
         return self.conn.cursor()
+
 
 db = DB()
