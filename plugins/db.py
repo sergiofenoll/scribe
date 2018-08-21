@@ -14,7 +14,10 @@ class DB:
             "create table if not exists messages(m_id bigint primary key, sent_time timestamp, content text, u_id bigint references users(u_id), c_id bigint references channels(c_id), g_id bigint references guilds(g_id) on delete cascade, edited bool, edited_count int, edited_time timestamp, deleted bool, deleted_time timestamp)"
         )
         curs.execute(
-            "create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, reaction_name text, reaction_count integer, primary key(m_id, reaction_name))"
+            "create table if not exists emojis(e_id bigint primary key, g_id bigint references guilds(g_id), name text, animated bool, created_time timestamp)"
+        )
+        curs.execute(
+            "create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, e_id bigint references emojis(e_id), count integer, primary key(m_id, e_id))"
         )
         curs.execute(
             "create table if not exists guilds(g_id bigint, name text, start_time timestamp, end_time timestamp, primary key(g_id, start_time))"
@@ -150,7 +153,7 @@ class DB:
     def edit_message(self, filters, data):
         curs = self.cursor()
         statement = (
-            "update messages set content = ?, edited_time = ?, edited = true, edited_count = edited_count + 1, where "
+            "update messages set content = ?, edited_time = ?, edited = true, edited_count = edited_count + 1 where "
             + (" and ".join(key + " = ?" for key in filters.keys()))
         )
         curs.execute(
@@ -165,6 +168,16 @@ class DB:
             + (" and ".join(key + " = ?" for key in filters.keys()))
         )
         curs.execute(statement, [data["deleted_time"]] + list(filters.keys()))
+        self.conn.commit()
+
+    def update_emoji(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into emojis values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
         self.conn.commit()
 
     def update_reaction(self, data):

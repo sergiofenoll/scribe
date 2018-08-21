@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 from plugins.db import db
+from discord import utils
 
 END_TIME = datetime.strptime("9999-12-31", "%Y-%m-%d")
 
@@ -53,6 +54,16 @@ class Messages:
                             "end_time": END_TIME,
                         }
                     )
+            for emoji in guild.emojis:
+                db.update_emoji(
+                    {
+                        "e_id": emoji.id,
+                        "g_id": guild.id,
+                        "name": emoji.name,
+                        "animated": emoji.animated,
+                        "created_time": emoji.created_at,
+                    }
+                )
 
     async def on_member_join(self, member):
         db.add_user(
@@ -184,11 +195,20 @@ class Messages:
         )
 
     async def on_reaction_add(self, reaction, user):
+        db.update_emoji(
+            {
+                "e_id": reaction.emoji.id,
+                "g_id": reaction.message.guild.id,
+                "name": reaction.emoji.name,
+                "animated": reaction.emoji.animated,
+                "created_time": utils.snowflake_time(reaction.emoji.id),
+            }
+        )
         db.update_reaction(
             data={
                 "m_id": reaction.message.id,
-                "reaction_name": str(reaction.emoji),
-                "reaction_count": reaction.count,
+                "e_id": reaction.emoji.id,
+                "count": reaction.count,
             }
         )
 
@@ -196,8 +216,8 @@ class Messages:
         db.update_reaction(
             data={
                 "m_id": reaction.message.id,
-                "reaction_name": str(reaction.emoji),
-                "reaction_count": reaction.count,
+                "e_id": reaction.emoji.id,
+                "count": reaction.count,
             }
         )
 
@@ -206,8 +226,20 @@ class Messages:
             db.update_reaction(
                 data={
                     "m_id": message.id,
-                    "reaction_name": str(reaction.emoji),
-                    "reaction_count": reaction.count,
+                    "e_id": reaction.emoji.id,
+                    "count": reaction.count,
+                }
+            )
+
+    async def on_guild_emojis_update(self, guild, before, after):
+        for emoji in after:
+            db.update_emoji(
+                {
+                    "e_id": emoji.id,
+                    "g_id": guild.id,
+                    "name": emoji.name,
+                    "animated": emoji.animated,
+                    "created_time": emoji.created_at,
                 }
             )
 
