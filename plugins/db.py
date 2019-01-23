@@ -25,6 +25,9 @@ class DB:
         curs.execute(
             "create table if not exists channels(c_id bigint, g_id bigint references guilds(g_id) on delete cascade, name text, topic text, start_time timestamp, end_time timestamp, primary key(c_id, start_time))"
         )
+        curs.execute(
+                "create table if not exists bans(count integer default 0, u_id bigint references users(u_id) on delete cascade, primary key(u_id))"
+        )
         self.conn.commit()
 
     def user_exists(self, filters):
@@ -87,6 +90,7 @@ class DB:
         statement = "update guilds set end_time = ? where " + (
             " and ".join(key + " = ?" for key in filters.keys())
         )
+        print(statement)
         curs.execute(statement, [data["end_time"]] + list(filters.keys()))
         self.conn.commit()
 
@@ -189,6 +193,28 @@ class DB:
         )
         curs.execute(statement, list(data.values()))
         self.conn.commit()
+
+    def update_bans(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into bans values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
+
+    def get_bans(self, filters):
+        curs = self.cursor()
+        statement = (
+            "select count from bans where u_id = ?"
+        )
+        result = curs.execute(statement, [filters["user_id"]]).fetchone()
+        self.conn.commit()
+        if result is None:
+            return (0,)
+        else:
+            return result
 
     def cursor(self):
         return self.conn.cursor()
