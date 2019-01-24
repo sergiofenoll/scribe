@@ -80,7 +80,7 @@ class Messages:
         )
 
     async def on_member_remove(self, member):
-        db.delete_user(filters={"u_id": member.id}, data={"left": False})
+        db.delete_user(filters={"u_id": member.id}, data={"left": True})
 
     async def on_member_update(self, before, after):
         db.edit_user(
@@ -195,38 +195,59 @@ class Messages:
         )
 
     async def on_reaction_add(self, reaction, user):
-        db.update_emoji(
-            {
-                "e_id": reaction.emoji.id,
-                "g_id": reaction.message.guild.id,
-                "name": reaction.emoji.name,
-                "animated": reaction.emoji.animated,
-                "created_time": utils.snowflake_time(reaction.emoji.id),
-            }
-        )
+        try:
+            emoji = reaction.emoji.id
+            db.update_emoji(
+                {
+                    "e_id": emoji,
+                    "g_id": reaction.message.guild.id,
+                    "name": reaction.emoji.name,
+                    "animated": reaction.emoji.animated,
+                    "created_time": utils.snowflake_time(reaction.emoji.id),
+                }
+            )
+        except AttributeError:
+            emoji = reaction.emoji
+            db.update_emoji(
+                {
+                    "e_id": emoji,
+                    "g_id": reaction.message.guild.id,
+                    "name": emoji,
+                    "animated": False,
+                    "created_time": END_TIME,
+                }
+            )
         db.update_reaction(
             data={
                 "m_id": reaction.message.id,
-                "e_id": reaction.emoji.id,
+                "e_id": emoji,
                 "count": reaction.count,
             }
         )
 
     async def on_reaction_remove(self, reaction, user):
+        try:
+            emoji = reaction.emoji.id
+        except AttributeError:
+            emoji = reaction.emoji 
         db.update_reaction(
             data={
                 "m_id": reaction.message.id,
-                "e_id": reaction.emoji.id,
+                "e_id": emoji,
                 "count": reaction.count,
             }
         )
 
     async def on_reaction_clear(self, message, reactions):
         for reaction in reactions:
+            try:
+                emoji = reaction.emoji.id
+            except AttributeError:
+                emoji = reaction.emoji
             db.update_reaction(
                 data={
                     "m_id": message.id,
-                    "e_id": reaction.emoji.id,
+                    "e_id": emoji,
                     "count": reaction.count,
                 }
             )

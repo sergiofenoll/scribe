@@ -14,10 +14,10 @@ class DB:
             "create table if not exists messages(m_id bigint primary key, sent_time timestamp, content text, u_id bigint references users(u_id), c_id bigint references channels(c_id), g_id bigint references guilds(g_id) on delete cascade, edited bool, edited_count int, edited_time timestamp, deleted bool, deleted_time timestamp)"
         )
         curs.execute(
-            "create table if not exists emojis(e_id bigint primary key, g_id bigint references guilds(g_id), name text, animated bool, created_time timestamp)"
+            "create table if not exists emojis(e_id varchar primary key, g_id bigint references guilds(g_id), name text, animated bool, created_time timestamp)"
         )
         curs.execute(
-            "create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, e_id bigint references emojis(e_id), count integer, primary key(m_id, e_id))"
+            "create table if not exists reactions(m_id bigint references messages(m_id) on delete cascade, e_id varchar references emojis(e_id), count integer, primary key(m_id, e_id))"
         )
         curs.execute(
             "create table if not exists guilds(g_id bigint, name text, start_time timestamp, end_time timestamp, primary key(g_id, start_time))"
@@ -157,7 +157,7 @@ class DB:
     def edit_message(self, filters, data):
         curs = self.cursor()
         statement = (
-            "update messages set content = ?, edited_time = ?, edited = true, edited_count = edited_count + 1 where "
+            "update messages set content = ?, edited_time = ?, edited = 1, edited_count = edited_count + 1 where "
             + (" and ".join(key + " = ?" for key in filters.keys()))
         )
         curs.execute(
@@ -168,7 +168,7 @@ class DB:
     def delete_message(self, filters, data):
         curs = self.cursor()
         statement = (
-            "update messages set content = NULL, deleted_time = ?, deleted = true where "
+            "update messages set content = NULL, deleted_time = ?, deleted = 1 where "
             + (" and ".join(key + " = ?" for key in filters.keys()))
         )
         curs.execute(statement, [data["deleted_time"]] + list(filters.keys()))

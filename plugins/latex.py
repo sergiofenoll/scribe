@@ -1,7 +1,9 @@
-from matplotlib import rcParams, pyplot as plt
-from matplotlib.text import Text
-from matplotlib.figure import Figure
+import discord
+import subprocess
+import os
+import io
 from discord.ext import commands
+
 
 
 class Latex:
@@ -10,31 +12,35 @@ class Latex:
 
     @commands.command()
     async def latex(self, ctx, *, content):
-        try:
-            text = content[:-3].split(maxsplit=1)[1].rstrip()
-        except IndexError as e:
-            # content = ```xxx```, can't render
-            await ctx.send("I can't render nothing, my dude.")
+        if content[:3] == content[-3:] == "```":
+            if len(content.split()) == 1:
+                text = content[3:-3]
+            else:
+                text = content[:-3].split(maxsplit=1)[1].rstrip()
+        elif content[0] == content[-1] == "`":
+            text = content[1:-1]
+        else:
+            text = content
+        latex_output_dir = os.path.join(__file__.rsplit("/", maxsplit=1)[0], "..", "__latex_output") 
+        if not os.path.exists(latex_output_dir):
+            os.mkdir(latex_output_dir)
 
-        plt.rc("text", usetex=True)
-        plt.rc("font", family="serif")
-        rcParams["text.latex.preamble"] = [r"\usepackage{amsmath}"]
-        # rcParams['figure.figsize'] = 2, 2
-        plt.axis("off")
-
-        plt.text(
-            0.5,
-            0.5,
-            text,
-            verticalalignment="center",
-            horizontalalignment="center",
-            size="xx-large",
-        )
-        plt.tight_layout(pad=0)
-        plt.savefig("a", bbox_inches="tight", pad_inches=0)
-        plt.close()
-
-        await ctx.send(file=discord.File("a.png"))
+        tex = r"""\documentclass[preview, border={10pt, 10pt, 10pt, 10pt}]{standalone}
+\usepackage{amsmath}
+\usepackage{euler}
+\usepackage{fontspec}
+\newfontfamily\emoji{DejaVu Sans}
+\begin{document}
+\fontsize{20}{22}\selectfont
+%s
+\end{document}
+""" % text
+        
+        with open(os.path.join(latex_output_dir, "temp.tex"), "w") as tex_file:
+            tex_file.write(tex)
+        subprocess.call(["xelatex", "-interaction=nonstopmode", "-output-directory", latex_output_dir, tex_file.name])
+        img = subprocess.check_output(["pdftoppm", os.path.join(latex_output_dir, "temp.pdf"), "-png"])
+        await ctx.send(file=discord.File(io.BytesIO(img), "tex.png"))
 
 
 def setup(bot):
