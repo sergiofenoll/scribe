@@ -1,5 +1,5 @@
 import config
-from plugins.db import db
+from utils.db import db
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix=config.command_prefix)

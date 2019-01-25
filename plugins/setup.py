@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 from discord.ext import commands
-from plugins.db import db
+from utils.db import db
 
 
 class Setup:

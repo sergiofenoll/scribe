@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+	<head>
+		<title>The banhammer falls upon us all</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}">
+	</head>
+	<body>
+		<section class="section">
+			<header class="level">
+				<figure class="image is-64x64">
+					<img src="{{ url_for('static', filename='banned.png') }}">
+				</figure>
+				<h1 class="title level-item">Ban counter for <i>The Club</i></h1>
+				<figure class="image is-64x64">
+					<img src="{{ url_for('static', filename='banned.png') }}">
+				</figure>
+			</header>
+			<div class="columns is-multiline">
+				{% for t in users %}
+				<div class="column is-one-third">
+					<div class="card">
+						<div class="card-header">
+							<p class="card-header-title">
+								{{ t[0] }}'s ban count
+							</p>
+						</div>
+						<div class="card-content">
+							{{ t[0] }} has been banned <b>{{ t[1] }}</b> times!
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</section>
+	</body>
+</html>

@@ -1,6 +1,6 @@
 import asyncio
 from datetime import datetime
-from plugins.db import db
+from utils.db import db
 from discord import utils
 
 END_TIME = datetime.strptime("9999-12-31", "%Y-%m-%d")
@@ -186,7 +186,7 @@ class Messages:
         )
 
     async def on_message_delete(self, message):
-        db.delete_message(filters={"m_id": message.id, "deleted_time": datetime.now()})
+        db.delete_message(filters={"m_id": message.id, "deleted_time": datetime.now()}, data={"deleted_time": datetime.now()})
 
     async def on_message_edit(self, before, after):
         db.edit_message(

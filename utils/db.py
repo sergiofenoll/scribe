@@ -66,6 +66,13 @@ class DB:
         self.conn.commit()
         self.add_user(data)
 
+    def get_user(self, filters):
+        curs = self.cursor()
+        statement = "select * from users where " + (
+            " and ".join(key + " = ?" for key in filters.keys())
+        )
+        return curs.execute(statement, list(filters.values())).fetchone()
+
     def guild_exists(self, filters):
         curs = self.cursor()
         statement = "select * from guilds where " + (
