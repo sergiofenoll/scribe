@@ -49,7 +49,7 @@ class Messages:
                             "username": member.name,
                             "discriminator": member.discriminator,
                             "nick": member.nick,
-                            "left": True,
+                            "left": False,
                             "start_time": datetime.now(),
                             "end_time": END_TIME,
                         }

@@ -1,9 +1,9 @@
 import sqlite3
-
+import os
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect("messages.db")
+        self.conn = sqlite3.connect("/home/sff/scribe/messages.db")
 
     def create_db(self):
         curs = self.cursor()

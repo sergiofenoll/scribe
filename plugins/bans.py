@@ -30,7 +30,11 @@ def create_ban_embed(banner, bannee, ban_count, ban=True):
     embed.set_thumbnail(url=bannee.avatar_url)
     embed.add_field(name=banner_field_name, value=f"{banner.name}#{banner.discriminator}")    
     embed.add_field(name=bannee_field_name, value=f"{bannee.name}#{bannee.discriminator}")
+    embed.add_field(name="Want to check all the bans?", value="[Ban counter](https://sergio.fenoll.be/banned)")
     return embed
+
+def check_not_test_server(ctx):
+    return ctx.message.guild.id == 453123430326337547
 
 class Bans:
     def __init__(self, bot):
@@ -76,7 +80,7 @@ class Bans:
         if banner == bannee:
             return
 
-        self.dtimerecrement_ban(bannee)
+        self.decrement_ban(bannee)
         ban_count = db.get_bans({"user_id": bannee.id})[0]
 
         ban_msg = await ctx.send(embed=create_ban_embed(banner, bannee, ban_count, ban=False))
@@ -159,7 +163,7 @@ class Bans:
                                        discriminator=embed.fields[0].value.split("#")[1])
                 if banner == bannee:
                     return
-                if banner == bannee:
+                if banner == og_banner:
                     return
                 
                 if embed.title == "Ban!":

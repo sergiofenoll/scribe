@@ -1,6 +1,8 @@
 __latex_output
 __pycache__
-env
+env/
+venv/
 config.py.real
 config.py.skel
 messages.db
+*.pyc
