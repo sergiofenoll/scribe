@@ -10,7 +10,9 @@ class Waifu:
         self.url = "https://www.thiswaifudoesnotexist.net/example-{}.jpg"
 
     @commands.command()
-    async def waifu(self, ctx):
+    async def waifu(self, ctx, *args):
+        if len(args):
+            random.seed(" ".join(args))
         num = random.randint(0, 99999)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.url.format(num)) as r:
