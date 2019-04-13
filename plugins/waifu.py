@@ -4,7 +4,7 @@ import random
 import discord
 from discord.ext import commands
 
-class Waifu:
+class Waifu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.url = "https://www.thiswaifudoesnotexist.net/example-{}.jpg"
@@ -20,7 +20,6 @@ class Waifu:
                     return await ctx.message.channel.send("I couldn't get you a waifu...")
                 img = io.BytesIO(await r.read())
                 await ctx.message.channel.send(file=discord.File(img, f'waifu-{num}.jpg'))
-
 
 def setup(bot):
     bot.add_cog(Waifu(bot))

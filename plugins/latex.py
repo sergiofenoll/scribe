@@ -6,7 +6,7 @@ from discord.ext import commands
 
 
 
-class Latex:
+class Latex(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 

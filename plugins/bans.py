@@ -36,7 +36,7 @@ def create_ban_embed(banner, bannee, ban_count, ban=True):
 def check_not_test_server(ctx):
     return ctx.message.guild.id == 453123430326337547
 
-class Bans:
+class Bans(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.embed_edit_tasks = {}
@@ -87,6 +87,7 @@ class Bans:
         await ban_msg.add_reaction(self.bot.get_emoji(GREEN_TICK))
         await ban_msg.add_reaction(self.bot.get_emoji(RED_TICK))
 
+    @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         if user == self.bot.user:
             return
@@ -140,6 +141,7 @@ class Bans:
             # Message did not contain any embeds
             pass
                 
+    @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         if user == self.bot.user:
             return

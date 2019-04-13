@@ -4,7 +4,7 @@ from discord.ext import commands
 from utils.db import db
 
 
-class Setup:
+class Setup(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
