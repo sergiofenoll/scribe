@@ -7,7 +7,7 @@ bot = commands.Bot(command_prefix=config.command_prefix)
 
 @bot.check
 def guild_has_plugin(ctx):
-    return ctx.guild.id in plugin_cache.cache[ctx.cog.qualified_name]
+    return ctx.cog.qualified_name in plugin_cache.cache[ctx.guild.id]
 
 if __name__ == "__main__":
     db.create_db()

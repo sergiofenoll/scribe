@@ -33,7 +33,7 @@ class PluginManager(commands.Cog):
     @commands.command()
     @commands.check(plugin_manager_permissions)
     async def loaded(self, ctx):
-        await ctx.send(f"Currently loaded plugins: {', '.join(plugin for plugin in plugin_cache.cache if ctx.guild.id in plugin_cache.cache[plugin])}")
+        await ctx.send(f"Currently loaded plugins: {', '.join(plugin_cache.cache[ctx.guild.id])}")
 
 def setup(bot):
     bot.add_cog(PluginManager(bot))
