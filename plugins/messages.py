@@ -13,10 +13,6 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Logged in as")
-        print(self.bot.user.name)
-        print(self.bot.user.id)
-        print("---------")
         for guild in self.bot.guilds:
             if not db.guild_exists(filters={"g_id": guild.id}):
                 db.add_guild(
@@ -72,7 +68,7 @@ class Messages(commands.Cog):
         db.add_user(
             {
                 "u_id": member.id,
-                "g_id": guild.id,
+                "g_id": member.guild.id,
                 "username": member.name,
                 "discriminator": member.discriminator,
                 "nick": member.nick,

@@ -3,7 +3,8 @@ import os
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect("/home/sff/Projects/scribe/messages.db")
+        self.conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), '..', "messages.db"))
+        # exit()
 
     def create_db(self):
         curs = self.cursor()
@@ -26,7 +27,7 @@ class DB:
             "create table if not exists channels(c_id bigint, g_id bigint references guilds(g_id) on delete cascade, name text, topic text, start_time timestamp, end_time timestamp, primary key(c_id, start_time))"
         )
         curs.execute(
-                "create table if not exists bans(count integer default 0, u_id bigint references users(u_id) on delete cascade, primary key(u_id))"
+            "create table if not exists bans(count integer default 0, u_id bigint references users(u_id) on delete cascade, g_id bigint references guilds(g_id) on delete cascade, primary key(u_id, g_id))"
         )
         self.conn.commit()
 
@@ -137,7 +138,7 @@ class DB:
         curs.execute(statement, [data["end_time"]] + list(filters.values()))
         self.conn.commit()
 
-    def edit_channel(self, filters, data):
+    def edit_channel(self, filters, data):        
         curs = self.cursor()
         statement = "update channels set end_time = ? where " + (
             " and ".join(key + " = ?" for key in filters.keys())
@@ -214,9 +215,9 @@ class DB:
     def get_bans(self, filters):
         curs = self.cursor()
         statement = (
-            "select count from bans where u_id = ?"
+            "select count from bans where u_id = ? and g_id = ?"
         )
-        result = curs.execute(statement, [filters["user_id"]]).fetchone()
+        result = curs.execute(statement, [filters["u_id"], filters["g_id"]]).fetchone()
         self.conn.commit()
         if result is None:
             return (0,)

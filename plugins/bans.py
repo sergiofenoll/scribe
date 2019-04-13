@@ -43,12 +43,12 @@ class Bans(commands.Cog):
 
     # Internal functions
     def increment_ban(self, bannee):
-        cur_bans = db.get_bans({"user_id": bannee.id})[0]
-        db.update_bans({"count": cur_bans + 1, "u_id": bannee.id})
+        cur_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
+        db.update_bans({"count": cur_bans + 1, "u_id": bannee.id, "g_id": bannee.guild.id})
 
     def decrement_ban(self, bannee):
-        cur_bans = db.get_bans({"user_id": bannee.id})[0]
-        db.update_bans({"count": cur_bans - 1, "u_id": bannee.id})
+        cur_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
+        db.update_bans({"count": cur_bans - 1, "u_id": bannee.id, "g_id": bannee.guild.id})
         
     async def edit_embed(self, msg, embed):
         try:
@@ -66,7 +66,7 @@ class Bans(commands.Cog):
             return
 
         self.increment_ban(bannee)
-        ban_count = db.get_bans({"user_id": bannee.id})[0]
+        ban_count = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
         
         ban_msg = await ctx.send(embed=create_ban_embed(banner, bannee, ban_count))
         await ban_msg.add_reaction(self.bot.get_emoji(GREEN_TICK))
@@ -81,7 +81,7 @@ class Bans(commands.Cog):
             return
 
         self.decrement_ban(bannee)
-        ban_count = db.get_bans({"user_id": bannee.id})[0]
+        ban_count = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
 
         ban_msg = await ctx.send(embed=create_ban_embed(banner, bannee, ban_count, ban=False))
         await ban_msg.add_reaction(self.bot.get_emoji(GREEN_TICK))
@@ -129,7 +129,7 @@ class Bans(commands.Cog):
                 elif reaction.emoji.id == RED_TICK:
                     red_tick_func(bannee)
 
-                new_bans = db.get_bans({"user_id": bannee.id})[0]
+                new_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
                 embed.description = embed_desc.format(bannee_name, new_bans)
                 if msg in self.embed_edit_tasks:
                     self.embed_edit_tasks[msg].cancel()
@@ -182,7 +182,7 @@ class Bans(commands.Cog):
                 elif reaction.emoji.id == RED_TICK:
                     red_tick_func(bannee)
 
-                new_bans = db.get_bans({"user_id": bannee.id})[0]
+                new_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
                 embed.description = embed_desc.format(bannee_name, new_bans)
                 if msg in self.embed_edit_tasks:
                     self.embed_edit_tasks[msg].cancel()
