@@ -58,6 +58,7 @@ class Bans(commands.Cog):
             pass
 
     @commands.command()
+    @commands.guild_only()
     async def ban(self, ctx, user_mention):
         banner = ctx.message.author
         bannee = ctx.message.guild.get_member(int(user_mention.strip("<>@!")))
@@ -73,6 +74,7 @@ class Bans(commands.Cog):
         await ban_msg.add_reaction(self.bot.get_emoji(RED_TICK))
 
     @commands.command()
+    @commands.guild_only()
     async def unban(self, ctx, user_mention):
         banner = ctx.message.author
         bannee = ctx.message.guild.get_member(int(user_mention.strip("<>@!")))

@@ -12,6 +12,7 @@ class PluginManager(commands.Cog):
 
     @commands.command()
     @commands.check(plugin_manager_permissions)
+    @commands.guild_only()
     async def load(self, ctx, plugin):
         if plugin in plugin_cache.plugins:
             plugin_cache.load_plugin(ctx.guild.id, plugin)
@@ -21,6 +22,7 @@ class PluginManager(commands.Cog):
 
     @commands.command()
     @commands.check(plugin_manager_permissions)
+    @commands.guild_only()
     async def unload(self, ctx, plugin):
         if plugin == "PluginManager":
             await ctx.send("PluginManager cannot be unloaded")
@@ -32,6 +34,7 @@ class PluginManager(commands.Cog):
 
     @commands.command()
     @commands.check(plugin_manager_permissions)
+    @commands.guild_only()
     async def loaded(self, ctx):
         await ctx.send(f"Currently loaded plugins: {', '.join(plugin_cache.cache[ctx.guild.id])}")
 

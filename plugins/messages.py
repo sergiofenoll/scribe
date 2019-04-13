@@ -1,4 +1,5 @@
 import asyncio
+import discord
 from datetime import datetime
 from utils.db import db
 from utils.plugin_cache import plugin_cache
@@ -179,6 +180,8 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        if isinstance(message.channel, discord.DMChannel):
+            return
         db.add_message(
             {
                 "m_id": message.id,
@@ -197,10 +200,14 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
+        if isinstance(message.channel, discord.DMChannel):
+            return
         db.delete_message(filters={"m_id": message.id, "deleted_time": datetime.now()}, data={"deleted_time": datetime.now()})
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
+        if isinstance(before.channel, discord.DMChannel):
+            return
         db.edit_message(
             filters={"m_id": after.id},
             data={"content": after.clean_content, "edited_time": after.edited_at},
@@ -208,6 +215,8 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
+        if isinstance(reaction.message.channel, discord.DMChannel):
+            return
         try:
             emoji = reaction.emoji.id
             db.update_emoji(
@@ -240,6 +249,8 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
+        if isinstance(reaction.message.channel, discord.DMChannel):
+            return
         try:
             emoji = reaction.emoji.id
         except AttributeError:
@@ -254,6 +265,8 @@ class Messages(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_clear(self, message, reactions):
+        if isinstance(message.channel, discord.DMChannel):
+            return
         for reaction in reactions:
             try:
                 emoji = reaction.emoji.id
