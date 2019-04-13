@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 from utils.db import db
+from utils.plugin_cache import plugin_cache
 from discord import utils
 from discord.ext import commands
 
@@ -62,6 +63,7 @@ class Messages(commands.Cog):
                         "created_time": emoji.created_at,
                     }
                 )
+        plugin_cache.create_cache(self.bot)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):

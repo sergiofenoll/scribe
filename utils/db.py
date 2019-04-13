@@ -29,6 +29,9 @@ class DB:
         curs.execute(
             "create table if not exists bans(count integer default 0, u_id bigint references users(u_id) on delete cascade, g_id bigint references guilds(g_id) on delete cascade, primary key(u_id, g_id))"
         )
+        curs.execute(
+            "create table if not exists plugins(plugin_name text, g_id bigint references guilds(g_id) on delete cascade, loaded bool, primary key(plugin_name, g_id))"
+        )
         self.conn.commit()
 
     def user_exists(self, filters):
@@ -110,6 +113,15 @@ class DB:
         curs.execute(statement, [data["start_time"]] + list(filters.values()))
         self.conn.commit()
         self.add_guild(data)
+    
+    def get_all_guilds(self):
+        curs = self.cursor()
+        statement = (
+            "select * from guilds"
+        )
+        result = curs.execute(statement)
+        self.conn.commit()
+        return result
 
     def channel_exists(self, filters):
         curs = self.cursor()
@@ -223,6 +235,34 @@ class DB:
             return (0,)
         else:
             return result
+
+    def update_plugins(self, data):
+        curs = self.cursor()
+        statement = (
+            "insert or replace into plugins values("
+            + ("?," * len(data.values()))[:-1]
+            + ")"
+        )
+        curs.execute(statement, list(data.values()))
+        self.conn.commit()
+
+    def get_plugins(self, filters):
+        curs = self.cursor()
+        statement = (
+            "select * from plugins where plugin_name = ? and g_id = ?"
+        )
+        result = curs.execute(statement, [filters["plugin_name"], filters["g_id"]])
+        self.conn.commit()
+        return result
+
+    def get_all_plugins(self):
+        curs = self.cursor()
+        statement = (
+            "select * from plugins"
+        )
+        result = curs.execute(statement)
+        self.conn.commit()
+        return result
 
     def cursor(self):
         return self.conn.cursor()
