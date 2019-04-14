@@ -13,13 +13,15 @@ class Waifu(commands.Cog):
     async def waifu(self, ctx, *args):
         if len(args):
             random.seed(" ".join(args))
+        else:
+            random.seed()
         num = random.randint(0, 99999)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.url.format(num)) as r:
                 if r.status != 200:
                     return await ctx.message.channel.send("I couldn't get you a waifu...")
                 img = io.BytesIO(await r.read())
-                await ctx.message.channel.send(file=discord.File(img, f'waifu-{num}.jpg'))
+                await ctx.message.channel.send(file=discord.File(img, f'waifu-{num}.jpg', spoiler=True))
 
 def setup(bot):
     bot.add_cog(Waifu(bot))
