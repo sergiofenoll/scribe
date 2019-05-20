@@ -21,7 +21,7 @@ class Reactions(commands.Cog):
 
     @commands.command()
     async def dog(self, ctx, aaa=""):
-        if re.match("a+", aaa):
+        if re.match("a+", aaa, re.IGNORECASE):
             amt = min(ceil(len(aaa) / 3), self.max_dog)
         else:
             amt = 1
