@@ -15,7 +15,7 @@ class Waifu(commands.Cog):
             random.seed(" ".join(args))
         else:
             random.seed()
-        num = random.randint(0, 99999)
+        num = random.randint(0, 199999)
         async with aiohttp.ClientSession() as session:
             async with session.get(self.url.format(num)) as r:
                 if r.status != 200:
