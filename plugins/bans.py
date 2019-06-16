@@ -4,13 +4,13 @@ from discord.ext import commands
 from discord import Embed, Colour, utils as dutils
 
 BANNED = 273572358202064897
-GREEN_TICK = 538422115334881290
-RED_TICK = 538422123660836891
+GREEN_TICK = 589939607345299477
+RED_TICK = 589939618754068480
 BAN_MSG_TEMPLATE = """Ban-count of **{0}** has been updated to **{1}**
-React to this message with <:greentick:538422115334881290> if you want to help swing the banhammer or <:redtick:538422123660836891> if you stand alongside **{0}**."""
+React to this message with <:greentick:589939607345299477> if you want to help swing the banhammer or <:redtick:589939618754068480> if you stand alongside **{0}**."""
 
 UNBAN_MSG_TEMPLATE = """Ban-count of **{0}** has been updated to **{1}**
-React to this message with <:greentick:538422115334881290> if you agree with this momentous decision or <:redtick:538422123660836891> if you think **{0}** deserves a good banning."""
+React to this message with <:greentick:589939607345299477> if you agree with this momentous decision or <:redtick:589939618754068480> if you think **{0}** deserves a good banning."""
 
 def create_ban_embed(banner, bannee, ban_count, ban=True):
     if ban:
