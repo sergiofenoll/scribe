@@ -19,8 +19,7 @@ class Reactions(commands.Cog):
         await asyncio.sleep(10)
         self.max_dog = 3
 
-    @commands.command()
-    async def dog(self, ctx, aaa=""):
+    async def send_dogs(self, message, aaa):
         if re.match("a+", aaa, re.IGNORECASE):
             amt = min(ceil(len(aaa) / 3), self.max_dog)
         else:
@@ -29,7 +28,19 @@ class Reactions(commands.Cog):
             self.dog_multiplier.cancel()
         self.dog_multiplier = asyncio.create_task(self.increment_dog_multiplier())
         for _ in range(amt):
-            await ctx.message.channel.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static" ,"dogaaaa.png")))
+            await message.channel.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static" ,"dogaaaa.png")))
+
+    @commands.command()
+    async def dog(self, ctx, aaa=""):
+        await self.send_dogs(ctx.message, aaa)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.content.startswith(self.bot.command_prefix):
+            # Get the first "word" from the message and remove command_prefix
+            aaa = message.content.split(' ', 1)[0].strip(self.bot.command_prefix)
+            await self.send_dogs(message, aaa)
+
 
 def setup(bot):
     bot.add_cog(Reactions(bot))
