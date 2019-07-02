@@ -41,6 +41,10 @@ class Reactions(commands.Cog):
             aaa = message.content.split(' ', 1)[0].strip(self.bot.command_prefix)
             await self.send_dogs(message, aaa, min_amt=0)
 
+    @commands.command(name="not-funny")
+    async def not_funny(self, ctx):
+        await ctx.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static", "not-funny.mp4")))
+
 
 def setup(bot):
     bot.add_cog(Reactions(bot))

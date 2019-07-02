@@ -1,3 +1,4 @@
+rework/
 __latex_output
 __pycache__
 env/
@@ -6,3 +7,4 @@ config.py.real
 config.py.skel
 messages.db
 *.pyc
+.vscode/
