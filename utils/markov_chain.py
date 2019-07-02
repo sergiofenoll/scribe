@@ -1,6 +1,7 @@
 from collections import defaultdict
 from dataclasses import dataclass
 from random import choices
+from math import floor
 
 @dataclass
 class State:
@@ -41,15 +42,11 @@ class MarkovChain:
                         self.__states[word].append(State(next_word, 1, 0.0))
                 except IndexError:
                     self.__states[word].append(State("", 1, 1.0))
-            
-        for word, next_words in self.__states.items():
-            total_occurences = sum([w.occurences for w in next_words])
-            for next_word in next_words:
-                next_word.probability = next_word.occurences / total_occurences
 
-    def next(self, word):
+    def next(self, word, iteration=0):
         if self.__states[word]:
-            return choices(self.__states[word], [w.probability for w in self.__states[word]])[0].word
+            total_occurences = sum([w.occurences if w != "" else min(iteration, w.occurences) for w in self.__states[word]])
+            return choices(self.__states[word], [w.occurences / total_occurences if w != "" else min(iteration / total_occurences, w.occurences / total_occurences) for w in self.__states[word]])[0].word
         else:
             return ""
 
@@ -61,7 +58,7 @@ class MarkovChain:
             generated = ""
         count = 0
         while True:
-            seed = self.next(seed)
+            seed = self.next(seed, max(floor(count / 10), 1))
             if seed:
                 generated += seed + " "
                 count += 1
