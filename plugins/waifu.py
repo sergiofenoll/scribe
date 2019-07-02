@@ -1,5 +1,7 @@
 import io
 import aiohttp
+from functools import partial
+import datetime
 import random
 import discord
 from discord.ext import commands
@@ -28,6 +30,7 @@ class Waifu(commands.Cog):
 class Markov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.markov_chains = {}
 
     @staticmethod
     def levenshtein(a, b):
@@ -60,13 +63,21 @@ class Markov(commands.Cog):
         if not user:
             await ctx.send(f"I couldn't find {user_handle}")
             return
+
+        if user in self.markov_chains:
+            mc, timestamp = self.markov_chains[user]
+        else:
+            mc = MarkovChain()
+            timestamp = datetime.datetime.strptime("1998-12-15", "%Y-%m-%d")
+
         curs = db.cursor()
-        statement = ("select content from messages where u_id=? and g_id=?")
+        statement = ("select content from messages where u_id=? and g_id=? and sent_time>?")
         text = ""
-        for message in curs.execute(statement, [user.id, ctx.guild.id]):
+        for message in curs.execute(statement, [user.id, ctx.guild.id, timestamp]):
             text += message[0].replace("\n", " ") + "\n"
-        mc = MarkovChain()
-        mc.train(text)
+        fn = partial(mc.train, text)
+        await self.bot.loop.run_in_executor(None, fn)
+        self.markov_chains[user] = (mc, datetime.datetime.now())
         msg = mc.generate()
         if msg == "":
             msg = f"{user.nick} hasn't sent enough messages for me to generate anything..."
