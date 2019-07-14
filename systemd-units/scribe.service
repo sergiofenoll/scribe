@@ -1,0 +1,13 @@
+[Unit]
+Description=Scribe Discord bot
+After=network.target
+
+[Service]
+Type=simple
+User=sff
+WorkingDirectory=/home/sff/Projects/scribe
+ExecStart=/home/sff/Projects/scribe/venv/bin/python /home/sff/Projects/scribe/scribe.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

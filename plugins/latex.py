@@ -28,8 +28,6 @@ class Latex(commands.Cog):
         tex = r"""\documentclass[preview, border={10pt, 10pt, 10pt, 10pt}]{standalone}
 \usepackage{amsmath}
 \usepackage{euler}
-\usepackage{fontspec}
-\newfontfamily\emoji{DejaVu Sans}
 \begin{document}
 \fontsize{20}{22}\selectfont
 %s
