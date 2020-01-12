@@ -3,7 +3,7 @@ async-timeout==3.0.0
 attrs==18.1.0
 chardet==3.0.4
 cycler==0.10.0
-git+https://github.com/Rapptz/discord.py@rewrite
+discord.py
 idna==2.7
 idna-ssl==1.1.0
 kiwisolver==1.0.1
