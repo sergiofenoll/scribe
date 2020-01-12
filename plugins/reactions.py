@@ -51,18 +51,18 @@ class Reactions(commands.Cog):
         #    aaa = message.content.split(' ', 1)[0].strip(self.bot.command_prefix)
         #    await self.send_dogs(message, aaa, min_amt=0)
         if re.match("^\$a+$", message.content, re.IGNORECASE) or re.match("^\$do+g$", message.content, re.IGNORECASE):
-            amt = min(ceil(len(message.content) / 3), self.max_dog)
+            amt = min(ceil((len(message.content) - 1) / 3), self.max_dog)
             if self.dog_multiplier:
                 self.dog_multiplier.cancel() 
             self.dog_multiplier = asyncio.create_task(self.increment_dog_multiplier())
-            for _ in range(amt):
+            for _ in range(amt - 1):
                 await message.channel.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static" ,"dogaaaa.png")))
         elif re.match("^\$ca+t$", message.content, re.IGNORECASE):
-            amt = min(ceil(len(message.content) / 3), self.max_dog)
+            amt = min(ceil((len(message.content) - 1) / 3), self.max_dog)
             if self.dog_multiplier:
                 self.dog_multiplier.cancel() 
             self.dog_multiplier = asyncio.create_task(self.increment_dog_multiplier())
-            for _ in range(amt):
+            for _ in range(amt - 1):
                 await message.channel.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static" ,"caaaat.png")))
 
     @commands.command(name="not-funny")
