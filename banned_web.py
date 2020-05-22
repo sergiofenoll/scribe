@@ -1,8 +1,8 @@
 from flask import Flask, render_template
 import sqlite3
-app = Flask(__name__, static_url_path="/banned")
+app = Flask(__name__, static_url_path="/banned/static")
 
-@app.route('/banned/')
+@app.route('/')
 def banned():
     with sqlite3.connect("messages.db") as con:
         cur = con.cursor()

@@ -11,7 +11,7 @@ from utils.markov_chain import MarkovChain
 class Waifu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.url = "https://www.thiswaifudoesnotexist.net/example-{}.jpg"
+        self.url = "https://www.thiswaifudoesnotexist.net/{}example-{}.jpg"
 
     @commands.command()
     async def waifu(self, ctx, *args):
@@ -19,13 +19,19 @@ class Waifu(commands.Cog):
             random.seed(" ".join(args))
         else:
             random.seed()
-        num = random.randint(0, 199999)
+        v2 = random.randint(0, 1)
+        if v2:
+            v2 = "v2/"
+            num = random.randint(0, 199999)
+        else:
+            v2 = ""
+            num = random.randint(0, 100000)
         async with aiohttp.ClientSession() as session:
-            async with session.get(self.url.format(num)) as r:
+            async with session.get(self.url.format(v2, num)) as r:
                 if r.status != 200:
                     return await ctx.message.channel.send("I couldn't get you a waifu...")
                 img = io.BytesIO(await r.read())
-                await ctx.message.channel.send(file=discord.File(img, f'waifu-{num}.jpg', spoiler=True))
+                await ctx.message.channel.send(file=discord.File(img, f'waifu-{v2}{num}.jpg', spoiler=True))
 
 class Markov(commands.Cog):
     def __init__(self, bot):
