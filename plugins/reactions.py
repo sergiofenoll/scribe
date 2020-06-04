@@ -68,6 +68,10 @@ class Reactions(commands.Cog):
     @commands.command(name="not-funny")
     async def not_funny(self, ctx):
         await ctx.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static", "not-funny.mp4")))
+    
+    @commands.command(name="fuckyou")
+    async def fuckyou(self, ctx):
+        await ctx.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static", "fuckyou.wav")))
 
 
 def setup(bot):
