@@ -1,4 +1,0 @@
-discord.py
-numpy
-flask
-gunicorn
