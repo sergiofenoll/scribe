@@ -73,6 +73,9 @@ class Reactions(commands.Cog):
     async def fuckyou(self, ctx):
         await ctx.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static", "fuckyou.wav")))
 
+    @commands.command(name="context")
+    async def context(self, ctx):
+        await ctx.send(file=discord.File(os.path.join(os.path.dirname(__file__), "..", "static", "context.png")))
 
 def setup(bot):
     bot.add_cog(Reactions(bot))
