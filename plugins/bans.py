@@ -30,7 +30,7 @@ def create_ban_embed(banner, bannee, ban_count, ban=True):
     embed.set_thumbnail(url=bannee.avatar_url)
     embed.add_field(name=banner_field_name, value=f"{banner.name}#{banner.discriminator}")    
     embed.add_field(name=bannee_field_name, value=f"{bannee.name}#{bannee.discriminator}")
-    embed.add_field(name="Want to check all the bans?", value="[Ban counter](https://sergio.fenoll.be/banned)")
+    embed.add_field(name="Want to check all the bans?", value="[Ban counter](https://banned.yikes.dog)")
     return embed
 
 def check_not_test_server(ctx):
