@@ -4,13 +4,11 @@ from discord.ext import commands
 from discord import Embed, Colour, utils as dutils
 
 BANNED = 273572358202064897
-GREEN_TICK = 589939607345299477
-RED_TICK = 589939618754068480
 BAN_MSG_TEMPLATE = """Ban-count of **{0}** has been updated to **{1}**
-React to this message with <:greentick:589939607345299477> if you want to help swing the banhammer or <:redtick:589939618754068480> if you stand alongside **{0}**."""
+React to this message with ✅ if you want to help swing the banhammer or ❎ if you stand alongside **{0}**."""
 
 UNBAN_MSG_TEMPLATE = """Ban-count of **{0}** has been updated to **{1}**
-React to this message with <:greentick:589939607345299477> if you agree with this momentous decision or <:redtick:589939618754068480> if you think **{0}** deserves a good banning."""
+React to this message with ✅ if you agree with this momentous decision or ❎ if you think **{0}** deserves a good banning."""
 
 def create_ban_embed(banner, bannee, ban_count, ban=True):
     if ban:
@@ -70,8 +68,8 @@ class Bans(commands.Cog):
         ban_count = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
         
         ban_msg = await ctx.send(embed=create_ban_embed(banner, bannee, ban_count))
-        await ban_msg.add_reaction(self.bot.get_emoji(GREEN_TICK))
-        await ban_msg.add_reaction(self.bot.get_emoji(RED_TICK))
+        await ban_msg.add_reaction(self.bot.get_emoji('✅'))
+        await ban_msg.add_reaction(self.bot.get_emoji('❎'))
 
     @commands.command()
     @commands.guild_only()
@@ -86,8 +84,8 @@ class Bans(commands.Cog):
         ban_count = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
 
         ban_msg = await ctx.send(embed=create_ban_embed(banner, bannee, ban_count, ban=False))
-        await ban_msg.add_reaction(self.bot.get_emoji(GREEN_TICK))
-        await ban_msg.add_reaction(self.bot.get_emoji(RED_TICK))
+        await ban_msg.add_reaction(self.bot.get_emoji('✅'))
+        await ban_msg.add_reaction(self.bot.get_emoji('❎'))
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -126,9 +124,9 @@ class Bans(commands.Cog):
                     green_tick_func = self.decrement_ban
                     red_tick_func = self.increment_ban
                 
-                if reaction.emoji.id == GREEN_TICK:
+                if str(reaction.emoji) == '✅':
                     green_tick_func(bannee)
-                elif reaction.emoji.id == RED_TICK:
+                elif str(reaction.emoji) == '❎':
                     red_tick_func(bannee)
 
                 new_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
@@ -179,9 +177,9 @@ class Bans(commands.Cog):
                     green_tick_func = self.increment_ban
                     red_tick_func = self.decrement_ban
                 
-                if reaction.emoji.id == GREEN_TICK:
+                if str(reaction.emoji) == '✅':
                     green_tick_func(bannee)
-                elif reaction.emoji.id == RED_TICK:
+                elif str(reaction.emoji) == '❎':
                     red_tick_func(bannee)
 
                 new_bans = db.get_bans({"u_id": bannee.id, "g_id": bannee.guild.id})[0]
